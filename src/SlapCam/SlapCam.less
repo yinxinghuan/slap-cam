@@ -1,0 +1,519 @@
+// ============================================================
+// SLAP CAM — chaotic comic-book aesthetic
+// CSS prefix: sc-
+// ============================================================
+
+@font-bungee: 'Bungee', system-ui, sans-serif;
+@font-shade: 'Bungee Shade', 'Bungee', system-ui, sans-serif;
+
+@c-yellow: #ffd400;
+@c-pink:   #ff3da3;
+@c-cyan:   #2dd4ff;
+@c-red:    #ff2d3d;
+@c-orange: #ff8a00;
+@c-ink:    #0d0d12;
+@c-paper:  #fff7e6;
+
+.sc-root {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: @c-paper;
+  font-family: @font-bungee;
+  color: @c-ink;
+  touch-action: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: crosshair;
+}
+
+// ---------- Background ----------
+.sc-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    // halftone dots
+    radial-gradient(circle at 20% 30%, rgba(0,0,0,0.06) 1.2px, transparent 1.4px) 0 0 / 22px 22px,
+    radial-gradient(circle at 60% 70%, rgba(0,0,0,0.06) 1.2px, transparent 1.4px) 11px 11px / 22px 22px,
+    // diagonal speed-lines
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 38px,
+      rgba(255, 61, 163, 0.06) 38px 40px
+    ),
+    // sky gradient
+    linear-gradient(170deg, #ffe7b3 0%, #ffd0e6 40%, #c9eaff 100%);
+}
+
+// ---------- Stage / Sprites ----------
+.sc-stage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sc-sprite {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;
+  filter: drop-shadow(0 6px 0 rgba(13,13,18,0.25));
+
+  &__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    transition: opacity 0.08s linear;
+
+    &--normal  { opacity: calc(1 - var(--sc-slapped, 0)); }
+    &--slapped { opacity: var(--sc-slapped, 0); }
+  }
+
+  &__flash {
+    position: absolute;
+    inset: 0;
+    background: white;
+    mix-blend-mode: screen;
+    border-radius: 50%;
+    opacity: var(--sc-flash, 0);
+    pointer-events: none;
+    z-index: 3;
+  }
+}
+
+// ---------- Impact Text (POW / SLAP / BAM) ----------
+.sc-fx-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sc-impact {
+  position: absolute;
+  pointer-events: none;
+  text-align: center;
+  animation: sc-impact-pop 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transform-origin: center;
+
+  &__word {
+    font-family: @font-shade;
+    font-size: 56px;
+    line-height: 1;
+    color: @c-yellow;
+    -webkit-text-stroke: 3px @c-ink;
+    paint-order: stroke fill;
+    letter-spacing: 1px;
+    filter: drop-shadow(4px 4px 0 @c-ink);
+  }
+
+  &__score {
+    margin-top: 4px;
+    font-family: @font-bungee;
+    font-size: 22px;
+    color: @c-ink;
+    background: @c-paper;
+    display: inline-block;
+    padding: 2px 8px;
+    border: 2px solid @c-ink;
+    border-radius: 4px;
+    transform: rotate(-3deg);
+  }
+
+  &--yellow .sc-impact__word { color: @c-yellow; }
+  &--red    .sc-impact__word { color: @c-red; }
+  &--rainbow .sc-impact__word {
+    background: linear-gradient(90deg, @c-red, @c-orange, @c-yellow, @c-cyan, @c-pink);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: sc-rainbow 0.8s linear infinite;
+  }
+}
+
+@keyframes sc-impact-pop {
+  0%   { transform: translate(-50%, -50%) scale(0.3) rotate(var(--r, 0)); opacity: 0; }
+  18%  { transform: translate(-50%, -50%) scale(1.25) rotate(var(--r, 0)); opacity: 1; }
+  32%  { transform: translate(-50%, -50%) scale(1) rotate(var(--r, 0)); opacity: 1; }
+  100% { transform: translate(-50%, -90%) scale(0.95) rotate(var(--r, 0)); opacity: 0; }
+}
+
+@keyframes sc-rainbow {
+  0%   { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+// ---------- HUD ----------
+.sc-hud {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 18px;
+  pointer-events: none;
+  z-index: 10;
+
+  &__cell {
+    background: @c-ink;
+    color: @c-paper;
+    border: 3px solid @c-ink;
+    box-shadow: 4px 4px 0 @c-yellow;
+    padding: 6px 14px;
+    transform: rotate(-2deg);
+  }
+  &__cell--right { transform: rotate(2deg); box-shadow: -4px 4px 0 @c-pink; }
+
+  &__label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    opacity: 0.75;
+  }
+  &__value {
+    font-size: 28px;
+    font-family: @font-bungee;
+    line-height: 1;
+    margin-top: 2px;
+    &--urgent {
+      color: @c-red;
+      animation: sc-pulse 0.4s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes sc-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+// ---------- Combo Indicator ----------
+.sc-combo {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  font-family: @font-shade;
+  font-size: 42px;
+  color: @c-yellow;
+  -webkit-text-stroke: 3px @c-ink;
+  paint-order: stroke fill;
+  pointer-events: none;
+  z-index: 9;
+  animation: sc-combo-bump 0.18s ease-out;
+
+  // Color escalation
+  &.sc-combo--3,
+  &.sc-combo--4,
+  &.sc-combo--5    { color: @c-orange; }
+
+  &.sc-combo--6,
+  &.sc-combo--7,
+  &.sc-combo--8,
+  &.sc-combo--9    { color: @c-red; }
+
+  &.sc-combo--10,
+  &.sc-combo--11,
+  &.sc-combo--12 {
+    background: linear-gradient(90deg, @c-red, @c-orange, @c-yellow, @c-cyan, @c-pink);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 52px;
+    animation: sc-combo-bump 0.18s ease-out, sc-rainbow 0.6s linear infinite;
+  }
+}
+
+@keyframes sc-combo-bump {
+  0%   { transform: translateX(-50%) rotate(-3deg) scale(1.4); }
+  100% { transform: translateX(-50%) rotate(-3deg) scale(1); }
+}
+
+// ---------- Screens (Start / End) ----------
+.sc-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  text-align: center;
+  z-index: 20;
+  pointer-events: auto;
+  // Translucent paper backdrop so sprites bleed through subtly
+  background: rgba(255, 247, 230, 0.78);
+  backdrop-filter: blur(2px);
+}
+
+// ---------- Start Screen ----------
+.sc-start {
+  &__title-row {
+    position: relative;
+    margin-bottom: 6px;
+  }
+
+  &__title {
+    font-family: @font-shade;
+    font-size: 72px;
+    line-height: 1;
+    color: @c-yellow;
+    -webkit-text-stroke: 4px @c-ink;
+    paint-order: stroke fill;
+    letter-spacing: 1px;
+    transform: rotate(-4deg);
+    filter: drop-shadow(6px 6px 0 @c-pink);
+  }
+  &__title-shadow { display: none; }
+
+  &__subtitle {
+    font-family: @font-bungee;
+    font-size: 16px;
+    color: @c-ink;
+    margin: 18px 0 32px;
+    background: @c-yellow;
+    border: 3px solid @c-ink;
+    padding: 6px 14px;
+    transform: rotate(1.5deg);
+    box-shadow: 4px 4px 0 @c-ink;
+  }
+
+  &__howto {
+    margin-top: 22px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    opacity: 0.7;
+  }
+
+  &__best {
+    margin-top: 18px;
+    font-size: 14px;
+    letter-spacing: 1px;
+    padding: 4px 12px;
+    border: 2px dashed @c-ink;
+    border-radius: 6px;
+  }
+}
+
+// ---------- End Screen ----------
+.sc-end {
+  &__title {
+    font-family: @font-shade;
+    font-size: 60px;
+    color: @c-red;
+    -webkit-text-stroke: 3px @c-ink;
+    paint-order: stroke fill;
+    transform: rotate(-3deg);
+    filter: drop-shadow(5px 5px 0 @c-ink);
+    margin-bottom: 18px;
+  }
+
+  &__score-label {
+    font-size: 12px;
+    letter-spacing: 2px;
+    opacity: 0.7;
+  }
+
+  &__score {
+    font-family: @font-shade;
+    font-size: 84px;
+    line-height: 1;
+    color: @c-yellow;
+    -webkit-text-stroke: 4px @c-ink;
+    paint-order: stroke fill;
+    margin: 4px 0 18px;
+    filter: drop-shadow(4px 4px 0 @c-pink);
+  }
+
+  &__newbest {
+    font-family: @font-bungee;
+    background: @c-pink;
+    color: @c-paper;
+    padding: 6px 14px;
+    border: 3px solid @c-ink;
+    transform: rotate(-2deg);
+    box-shadow: 4px 4px 0 @c-ink;
+    margin-bottom: 10px;
+    animation: sc-pulse 0.5s ease-in-out infinite;
+  }
+
+  &__best {
+    margin-bottom: 10px;
+    font-size: 14px;
+    letter-spacing: 1px;
+    opacity: 0.7;
+  }
+
+  &__stats {
+    display: flex;
+    gap: 14px;
+    margin: 8px 0 28px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    opacity: 0.75;
+
+    > div {
+      background: @c-ink;
+      color: @c-paper;
+      padding: 5px 10px;
+      border-radius: 4px;
+    }
+  }
+
+  &__buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+}
+
+// ---------- Buttons ----------
+.sc-btn {
+  font-family: @font-bungee;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: @c-ink;
+  background: @c-yellow;
+  border: 4px solid @c-ink;
+  padding: 14px 36px;
+  cursor: pointer;
+  box-shadow: 6px 6px 0 @c-ink;
+  transition: transform 0.08s, box-shadow 0.08s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    transform: translate(4px, 4px);
+    box-shadow: 2px 2px 0 @c-ink;
+  }
+
+  &--big {
+    font-size: 30px;
+    padding: 18px 56px;
+    background: @c-pink;
+    color: @c-paper;
+    box-shadow: 6px 6px 0 @c-ink, 0 0 0 4px @c-yellow inset;
+  }
+
+  &--ghost {
+    background: transparent;
+    color: @c-ink;
+    box-shadow: 4px 4px 0 @c-ink;
+    font-size: 16px;
+    padding: 10px 30px;
+  }
+}
+
+// ---------- Watermark (alteru.svg is natively white — sits on a dark pill so it reads on paper bg) ----------
+.sc-watermark {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  height: 14px;
+  width: auto;
+  padding: 6px 10px;
+  background: @c-ink;
+  border-radius: 999px;
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 30;
+  box-sizing: content-box;
+}
+
+// ---------- Splash Screen (initial preload) ----------
+.sc-splash {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  z-index: 100;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(0,0,0,0.06) 1.2px, transparent 1.4px) 0 0 / 22px 22px,
+    radial-gradient(circle at 60% 70%, rgba(0,0,0,0.06) 1.2px, transparent 1.4px) 11px 11px / 22px 22px,
+    linear-gradient(170deg, #ffe7b3 0%, #ffd0e6 40%, #c9eaff 100%);
+  opacity: 1;
+  transition: opacity 0.45s ease-out;
+
+  &--fading {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &__title {
+    font-family: @font-shade;
+    font-size: 72px;
+    line-height: 1;
+    color: @c-yellow;
+    -webkit-text-stroke: 4px @c-ink;
+    paint-order: stroke fill;
+    transform: rotate(-4deg);
+    filter: drop-shadow(6px 6px 0 @c-pink);
+  }
+
+  &__subtitle {
+    margin-top: 18px;
+    font-family: @font-bungee;
+    font-size: 14px;
+    background: @c-yellow;
+    color: @c-ink;
+    border: 3px solid @c-ink;
+    padding: 6px 12px;
+    transform: rotate(1.5deg);
+    box-shadow: 3px 3px 0 @c-ink;
+  }
+
+  &__cast {
+    margin: 40px 0 28px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 100%;
+  }
+
+  &__cast-head {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 0 rgba(13,13,18,0.22));
+    animation: sc-splash-bob 0.85s ease-in-out infinite alternate;
+  }
+
+  &__bar-track {
+    width: 240px;
+    height: 14px;
+    border: 3px solid @c-ink;
+    background: @c-paper;
+    box-shadow: 3px 3px 0 @c-ink;
+    overflow: hidden;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    background: @c-pink;
+    transition: width 0.18s linear;
+  }
+}
+
+@keyframes sc-splash-bob {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-9px); }
+}
+
+// ---------- Responsive shrink for small screens ----------
+@media (max-height: 600px) {
+  .sc-start__title { font-size: 56px; }
+  .sc-end__score { font-size: 64px; }
+  .sc-btn--big { font-size: 24px; padding: 14px 40px; }
+}
