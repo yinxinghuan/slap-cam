@@ -8,9 +8,10 @@ interface Props {
   isNewBest: boolean;
   onAgain: () => void;
   onHome: () => void;
+  onOpenLeaderboard: () => void;
 }
 
-export function EndScreen({ finalScore, best, totalSlaps, maxCombo, isNewBest, onAgain, onHome }: Props) {
+export function EndScreen({ finalScore, best, totalSlaps, maxCombo, isNewBest, onAgain, onHome, onOpenLeaderboard }: Props) {
   return (
     <div className="sc-screen sc-end">
       <div className="sc-end__title">{t('gameover')}</div>
@@ -31,6 +32,7 @@ export function EndScreen({ finalScore, best, totalSlaps, maxCombo, isNewBest, o
 
       <div className="sc-end__buttons">
         <button className="sc-btn sc-btn--big" onPointerDown={onAgain}>{t('again')}</button>
+        <button className="sc-btn sc-btn--ghost" onPointerDown={onOpenLeaderboard}>{t('leaderboard')}</button>
         <button className="sc-btn sc-btn--ghost" onPointerDown={onHome}>{t('home')}</button>
       </div>
     </div>

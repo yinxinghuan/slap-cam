@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSlapCam } from './hooks/useSlapCam';
 import { Sprite } from './components/Sprite';
 import { ImpactText } from './components/ImpactText';
@@ -6,6 +6,7 @@ import { SplashScreen } from './components/SplashScreen';
 import { StartScreen } from './components/StartScreen';
 import { EndScreen } from './components/EndScreen';
 import { t } from './i18n';
+import { useGameScore, Leaderboard } from '@shared/leaderboard';
 import aiUrl from './img/aigram.svg';
 import './SlapCam.less';
 
@@ -17,6 +18,17 @@ export default function SlapCam() {
     onPointerDown, onPointerMove, onPointerUp,
     start, home, splashDone,
   } = useSlapCam(containerRef);
+
+  const { isInAigram, submitScore, fetchGlobalLeaderboard, fetchFriendsLeaderboard } =
+    useGameScore('slap-cam');
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+
+  // Submit score when game ends
+  useEffect(() => {
+    if (screen === 'end' && stats.finalScore > 0) {
+      submitScore(stats.finalScore);
+    }
+  }, [screen, stats.finalScore, submitScore]);
 
   return (
     <div
@@ -65,7 +77,13 @@ export default function SlapCam() {
       )}
 
       {screen === 'splash' && <SplashScreen onDone={splashDone} />}
-      {screen === 'start' && <StartScreen best={best} onStart={start} />}
+      {screen === 'start' && (
+        <StartScreen
+          best={best}
+          onStart={start}
+          onOpenLeaderboard={() => setShowLeaderboard(true)}
+        />
+      )}
       {screen === 'end' && (
         <EndScreen
           finalScore={stats.finalScore}
@@ -75,6 +93,17 @@ export default function SlapCam() {
           isNewBest={stats.isNewBest}
           onAgain={start}
           onHome={home}
+          onOpenLeaderboard={() => setShowLeaderboard(true)}
+        />
+      )}
+
+      {showLeaderboard && (
+        <Leaderboard
+          gameName="SLAP CAM"
+          isInAigram={isInAigram}
+          onClose={() => setShowLeaderboard(false)}
+          fetchGlobal={fetchGlobalLeaderboard}
+          fetchFriends={fetchFriendsLeaderboard}
         />
       )}
 
