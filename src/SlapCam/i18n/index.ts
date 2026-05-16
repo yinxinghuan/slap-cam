@@ -23,6 +23,7 @@ const dict: Record<Locale, Record<string, string>> = {
     home: '返回',
     totalSlaps: '总耳光 {n}',
     maxCombo: '最高连击 x{n}',
+    leaderboard: '排行榜',
   },
   en: {
     title: 'SLAP CAM',
@@ -40,6 +41,7 @@ const dict: Record<Locale, Record<string, string>> = {
     home: 'HOME',
     totalSlaps: '{n} slaps',
     maxCombo: 'max combo x{n}',
+    leaderboard: 'TOP',
   },
 };
 
