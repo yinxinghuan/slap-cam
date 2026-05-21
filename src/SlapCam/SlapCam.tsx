@@ -19,8 +19,8 @@ export default function SlapCam() {
     start, home, splashDone,
   } = useSlapCam(containerRef);
 
-  const { isInAigram, submitScore, fetchGlobalLeaderboard, fetchFriendsLeaderboard } =
-    useGameScore('slap-cam');
+  const { isInAigram, submitScore, fetchLeaderboard } =
+    useGameScore();
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   // Submit score when game ends
@@ -102,8 +102,7 @@ export default function SlapCam() {
           gameName="SLAP CAM"
           isInAigram={isInAigram}
           onClose={() => setShowLeaderboard(false)}
-          fetchGlobal={fetchGlobalLeaderboard}
-          fetchFriends={fetchFriendsLeaderboard}
+          fetch={fetchLeaderboard}
         />
       )}
 
