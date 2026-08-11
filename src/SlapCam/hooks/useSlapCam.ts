@@ -39,7 +39,7 @@ const IMPACT_KINDS: ImpactFx['kind'][] = ['POW', 'SLAP', 'BAM', 'WHAM', 'BONK', 
 const BEST_KEY = 'slap_cam_best';
 
 function loadBest(): number {
-  const raw = localStorage.getItem(BEST_KEY);
+  const raw = alteruLocalStorage.getItem(BEST_KEY);
   const n = raw ? parseInt(raw, 10) : 0;
   return Number.isFinite(n) ? n : 0;
 }
@@ -251,7 +251,7 @@ export function useSlapCam(containerRef: RefObject<HTMLDivElement>) {
           });
           if (newBest) {
             setBest(final);
-            localStorage.setItem(BEST_KEY, String(final));
+            alteruLocalStorage.setItem(BEST_KEY, String(final));
           }
           playEnd();
           stopBgm();
